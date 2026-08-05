@@ -32,7 +32,7 @@ a:hover{color:#5c7d4a;}
         <a href="#about" style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#3a3a30;">About</a>
         <a href="#work" style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#3a3a30;">Work</a>
         <a href="#photography" style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#3a3a30;">Photography</a>
-        <a href="mailto:contact@sahanaparekh.com" style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#f4efe2;background:#38512f;padding:9px 18px;border-radius:100px;">Get in touch</a>
+        <a href="#" onClick="{{ copyEmail }}" style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#f4efe2;background:#38512f;padding:9px 18px;border-radius:100px;cursor:pointer;">{{ navEmailLabel }}</a>
       </div>
     </div>
   </nav>
@@ -280,7 +280,7 @@ a:hover{color:#5c7d4a;}
       <img src="images/perf-3.jpg" alt="Italian-Japanese Business Night" style="width:100%;margin:0 0 14px;border-radius:6px;display:block;break-inside:avoid;">
     </div>
     <p data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease;margin:26px 0 0;">
-      <a href="https://www.instagram.com/patiencephotographs/" target="_blank" rel="noopener" style="font-family:'Space Mono',monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid rgba(56,81,47,0.4);padding-bottom:2px;">See more @patiencephotographs →</a>
+      <a href="https://www.instagram.com/patiencestudios/" target="_blank" rel="noopener" style="font-family:'Space Mono',monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid rgba(56,81,47,0.4);padding-bottom:2px;">See more @patiencestudios →</a>
     </p>
   </section>
 
@@ -291,7 +291,7 @@ a:hover{color:#5c7d4a;}
         <p style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(244,239,226,0.6);margin:0 0 20px;">Let's work together</p>
         <h2 style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(40px,6vw,78px);line-height:1;letter-spacing:-0.01em;margin:0 0 34px;max-width:14em;">Hire the marketer with a photographer's eye.</h2>
         <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:60px;">
-          <a href="mailto:contact@sahanaparekh.com" style="font-family:'Space Mono',monospace;font-size:13px;letter-spacing:0.05em;text-transform:uppercase;color:#38512f;background:#f4efe2;padding:14px 26px;border-radius:100px;">contact@sahanaparekh.com</a>
+          <a href="#" onClick="{{ copyEmail }}" style="font-family:'Space Mono',monospace;font-size:13px;letter-spacing:0.05em;text-transform:uppercase;color:#38512f;background:#f4efe2;padding:14px 26px;border-radius:100px;cursor:pointer;">{{ footerEmailLabel }}</a>
           <a href="https://linkedin.com/in/sahanaparekh" target="_blank" rel="noopener" style="font-family:'Space Mono',monospace;font-size:13px;letter-spacing:0.05em;text-transform:uppercase;color:#f4efe2;border:1px solid rgba(244,239,226,0.4);padding:14px 26px;border-radius:100px;">LinkedIn</a>
         </div>
       </div>
@@ -302,7 +302,7 @@ a:hover{color:#5c7d4a;}
         </div>
         <div>
           <div style="font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(244,239,226,0.55);margin-bottom:8px;">Creative</div>
-          <a href="https://www.instagram.com/patiencephotographs/" target="_blank" rel="noopener" style="color:#f4efe2;font-size:15px;">@patiencephotographs</a>
+          <a href="https://www.instagram.com/patiencestudios/" target="_blank" rel="noopener" style="color:#f4efe2;font-size:15px;">@patiencestudios</a>
         </div>
         <div>
           <div style="font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(244,239,226,0.55);margin-bottom:8px;">Awareness</div>
@@ -331,7 +331,32 @@ class Component extends DCLogic {
     this._safety = setTimeout(()=>els.forEach(show), 2000);
   }
   componentWillUnmount(){ if(this._safety) clearTimeout(this._safety); }
-  renderVals(){ return { root: this.rootRef }; }
+  copyEmail = (e) => {
+    e.preventDefault();
+    const email = 'contact@sahanaparekh.com';
+    const done = () => {
+      this.setState({ copied: true });
+      clearTimeout(this._copyT);
+      this._copyT = setTimeout(() => this.setState({ copied: false }), 2000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(email).then(done, done);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = email; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch(err) {}
+      document.body.removeChild(ta); done();
+    }
+  };
+  renderVals(){
+    const copied = this.state && this.state.copied;
+    return {
+      root: this.rootRef,
+      copyEmail: this.copyEmail,
+      navEmailLabel: copied ? 'Copied!' : 'Get in touch',
+      footerEmailLabel: copied ? 'Copied to clipboard!' : 'contact@sahanaparekh.com'
+    };
+  }
 }
 </script>
 </body>
